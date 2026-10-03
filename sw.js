@@ -1,11 +1,12 @@
 // Keeps the app working offline. Change VERSION on every release so phones pick up the new files.
-const VERSION = '1';
+const VERSION = '2';
 const CACHE = 'mwd-' + VERSION;
 const FONT_CACHE = 'mwd-fonts';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
+  // 'reload' skips the browser's HTTP cache so a new release never caches old files.
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
